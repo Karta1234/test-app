@@ -9,7 +9,9 @@ import {
   View,
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
+import { FavoriteButton } from '../components/FavoriteButton';
 import { UpdatedAgo } from '../components/UpdatedAgo';
+import { useFavorites } from '../hooks/useFavorites';
 import { MATCHES_URL } from '../config';
 
 type MatchStatus = 'scheduled' | 'live' | 'finished' | 'postponed' | string;
@@ -85,6 +87,7 @@ function matchDate(startsAt: string | null): string {
 
 export function MatchesScreen() {
   const [filter, setFilter] = useState<Filter>('all');
+  const { isFavorite, toggle } = useFavorites();
   const { data, error, isPending, isFetching, dataUpdatedAt, refetch } = useQuery({
     queryKey: ['matches'],
     queryFn: fetchMatches,
@@ -174,6 +177,10 @@ export function MatchesScreen() {
                 <Text style={[styles.status, item.status === 'live' && styles.liveStatus]}>
                   {statusLabel(item)}
                 </Text>
+                <FavoriteButton
+                  active={isFavorite(item.id)}
+                  onPress={() => toggle(item.id)}
+                />
               </View>
               <View style={styles.teams}>
                 <View style={styles.team}>
